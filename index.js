@@ -3,16 +3,8 @@ import { ReviewerAgent } from "./agent/reviewer-agent.js";
 import { OllamaClient } from "./ollama/client.js";
 import { LLM_MODELS } from "./lib/config.js";
 
-// try {
-//     createDB();
-//     console.log("Database created");
-// } catch (error) {
-//     console.error("Failed to create database", error);
-//     process.exit(1);
-// }
-
 const client = new OllamaClient({
-    model: LLM_MODELS.LLAMA3,
+    model: LLM_MODELS.GEMMA3,
 });
 
 const reviewer = new ReviewerAgent({

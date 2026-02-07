@@ -1,11 +1,10 @@
-import { OLLAMA_BASE_API, TEMPERATURE, SYSTEM_PROMPT } from "../lib/config.js";
+import { OLLAMA_BASE_API, TEMPERATURE } from "../lib/config.js";
 
 export class OllamaClient {
     constructor({
         baseUrl = OLLAMA_BASE_API,
         model,
         temperature = TEMPERATURE,
-        systemPrompt = SYSTEM_PROMPT,
         timeout = 30 * 60 * 1000, // 30 min
     } = {}) {
         if (!model) {
@@ -15,16 +14,10 @@ export class OllamaClient {
         this.baseUrl = baseUrl;
         this.model = model;
         this.temperature = temperature;
-        this.systemPrompt = systemPrompt;
         this.timeout = timeout;
     }
 
-    async generate({
-        prompt,
-        temperatureOverride,
-        systemOverride,
-        json = false,
-    }) {
+    async generate({ system, prompt }) {
         if (!prompt) {
             throw new Error("Prompt is required");
         }
@@ -33,6 +26,8 @@ export class OllamaClient {
         const timeout = setTimeout(() => controller.abort(), this.timeout);
 
         try {
+            const start = Date.now(); // start time
+
             const response = await fetch(`${this.baseUrl}/api/generate`, {
                 method: "POST",
                 headers: {
@@ -40,13 +35,10 @@ export class OllamaClient {
                 },
                 body: JSON.stringify({
                     model: this.model,
+                    system,
                     prompt,
-                    system: systemOverride ?? this.systemPrompt,
                     stream: false,
-                    format: json ? "json" : undefined,
-                    options: {
-                        temperature: temperatureOverride ?? this.temperature,
-                    },
+                    options: { temperature: this.temperature },
                 }),
                 signal: controller.signal,
             });
@@ -56,7 +48,11 @@ export class OllamaClient {
             }
 
             const data = await response.json();
-            return json ? JSON.parse(data.response) : data.response;
+
+            const end = Date.now(); // end time
+            const duration = end - start;
+
+            return { response: data.response, duration };
         } catch (error) {
             console.error("ERROR :: OllamaClient.generate", error.message);
             throw error;

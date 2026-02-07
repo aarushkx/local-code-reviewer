@@ -1,5 +1,7 @@
 import fs from "fs/promises";
+import path from "path";
 import { reviewsDB } from "../lib/db.js";
+import { REVIEWER_AGENT_SYSTEM_PROMPT } from "../lib/config.js";
 
 export class ReviewerAgent {
     constructor({ llmClient }) {
@@ -13,31 +15,38 @@ export class ReviewerAgent {
     async reviewFile(filePath) {
         const content = await fs.readFile(filePath, "utf-8");
 
-        const prompt = `
-        Review the following code strictly.
+        const { response, duration } = await this.llm.generate({
+            system: REVIEWER_AGENT_SYSTEM_PROMPT,
+            prompt: `Review this code:\n\n${content}`,
+        });
+
+        const reportContent = `
+        ${response}
         
-        Return the response with the following:
-        1. Issues: List of issues found in the code.
-        2. Suggestions: List of suggestions for improving the code.
-        3. Security Warnings: List of security warnings found in the code.
-        4. Performance Notes: List of performance notes found in the code.
-        5. Score: A number between 0 and 100 representing the overall quality of the code.
-        }
+        ---
+
+        ## Review Metadata
         
-        Code:
-        ${content}
+        - File: ${filePath}
+        - Duration: ${duration.toFixed(2)} ms
+        - Reviewed At: ${new Date().toISOString()}
         `;
 
-        const review = await this.llm.generate({
-            prompt,
-        });
+        const reportPath = `${filePath}.review.md`;
+        await fs.writeFile(reportPath, reportContent);
 
         reviewsDB.insert({
             filePath,
-            ...review,
+            review: response,
+            durationMs: duration,
+            reportPath,
             timestamp: new Date(),
         });
 
-        return review;
+        return {
+            review: response,
+            duration,
+            reportPath,
+        };
     }
 }
