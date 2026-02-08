@@ -4,7 +4,7 @@ import { OllamaClient } from "./ollama/client.js";
 import { LLM_MODELS } from "./lib/config.js";
 
 const client = new OllamaClient({
-    model: LLM_MODELS.GEMMA3,
+    model: LLM_MODELS.LLAMA3,
 });
 
 const reviewer = new ReviewerAgent({
