@@ -1,0 +1,1 @@
+- [  ] Allow user to pass folder/file name as args. If no arg passed, fall to default recursive search.

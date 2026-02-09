@@ -30,7 +30,7 @@ export class ReviewerAgent {
             .replace(/[\/\\]/g, "__"); // Replace path separators with __
 
         const fileName = `gen_${cleanPath}.review.md`;
-        const reportPath = path.join(outputDir, `${fileName}.review.md`);
+        const reportPath = path.join(outputDir, fileName);
 
         const reportContent = `
 ${response}
@@ -38,9 +38,9 @@ ${response}
 
 ## Review Metadata
 
-- File: ${filePath}
-- Duration: ${formatDuration(duration)}
-- Reviewed At: ${formatDateTime(Date.now())}
+- **File**: ${filePath}
+- **Duration**: ${formatDuration(duration)}
+- **Reviewed At**: ${formatDateTime(Date.now())}
 `;
 
         await fs.writeFile(reportPath, reportContent);

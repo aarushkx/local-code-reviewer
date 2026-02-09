@@ -1,0 +1,15 @@
+# Dependencies
+node_modules
+vendor
+
+# Build outputs
+dist
+build
+_generated
+
+# Test coverage
+coverage
+
+# Specific files
+*.min.js
+*.bundle.js
