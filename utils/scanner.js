@@ -84,13 +84,13 @@ export const scanCodebase = async (rootDir = ".", allFiles = []) => {
     return allFiles;
 };
 
-export const reviewSourceFiles = async (sourceFiles, reviewerAgent) => {
+export const reviewSourceFiles = async (_id, sourceFiles, reviewerAgent) => {
     let total = sourceFiles.length;
     let success = 0;
     let failed = 0;
 
     if (total === 0) {
-        console.log("⚠️  No files to review!\n");
+        console.log("⚠️ No files to review!\n");
     }
 
     console.log(`📊 Found ${total} files to review\n`);
@@ -101,7 +101,7 @@ export const reviewSourceFiles = async (sourceFiles, reviewerAgent) => {
 
         try {
             console.log(`${progress} Reviewing: ${currFile}`);
-            await reviewerAgent.reviewFile(currFile);
+            await reviewerAgent.reviewFile(_id, currFile);
             success++;
         } catch (error) {
             console.log(

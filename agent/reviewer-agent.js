@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { reviewsDB } from "../lib/db.js";
-import { REVIEWER_AGENT_SYSTEM_PROMPT } from "../lib/config.js";
+import { REVIEWER_AGENT_SYSTEM_PROMPT } from "../lib/prompts.js";
 import { formatDuration, formatDateTime } from "../utils/format.js";
 
 export class ReviewerAgent {
@@ -9,11 +9,10 @@ export class ReviewerAgent {
         if (!llmClient) {
             throw new Error("llmClient is required");
         }
-
         this.llm = llmClient;
     }
 
-    async reviewFile(filePath) {
+    async reviewFile(_id, filePath) {
         const content = await fs.readFile(filePath, "utf-8");
 
         const { response, duration } = await this.llm.generate({
@@ -21,7 +20,7 @@ export class ReviewerAgent {
             prompt: `Review this code:\n\n${content}`,
         });
 
-        const outputDir = path.resolve("_generated");
+        const outputDir = path.resolve(`_generated/${_id}`);
         await fs.mkdir(outputDir, { recursive: true });
 
         const cleanPath = filePath
@@ -46,11 +45,13 @@ ${response}
         await fs.writeFile(reportPath, reportContent);
 
         reviewsDB.insert({
-            filePath,
-            review: response,
-            durationMs: duration,
-            reportPath,
-            timestamp: new Date(),
+            _id: {
+                filePath,
+                review: response,
+                durationMs: duration,
+                reportPath,
+                timestamp: new Date(),
+            },
         });
 
         return {
