@@ -45,13 +45,12 @@ ${response}
         await fs.writeFile(reportPath, reportContent);
 
         reviewsDB.insert({
-            _id: {
-                filePath,
-                review: response,
-                durationMs: duration,
-                reportPath,
-                timestamp: new Date(),
-            },
+            _id,
+            filePath,
+            review: response,
+            durationMs: duration,
+            reportPath,
+            timestamp: new Date(),
         });
 
         return {
