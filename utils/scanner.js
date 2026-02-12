@@ -3,19 +3,31 @@ import path from "path";
 
 // TODO: Add more valid extensions to the set
 const VALID_EXTENSIONS = new Set([
-    ".js", ".jsx", ".ts", ".tsx", // JavaScript/TypeScript
-    ".py", ".pyw", // Python
-    ".java", ".kt", ".scala", // JVM languages
-    ".c", ".cpp", ".cc", ".h", ".hpp", // C/C++
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx", // JavaScript/TypeScript
+    ".py",
+    ".pyw", // Python
+    ".java",
+    ".kt",
+    ".scala", // JVM languages
+    ".c",
+    ".cpp",
+    ".cc",
+    ".h",
+    ".hpp", // C/C++
     ".go", // Go
     ".rs", // Rust
     ".php", // PHP
     ".rb", // Ruby
     ".swift", // Swift
     ".cs", // C#
-    ".asm", ".s", // Assembly
+    ".asm",
+    ".s", // Assembly
     ".sql", // SQL
-    ".sh", ".bash", // Shell scripts
+    ".sh",
+    ".bash", // Shell scripts
 ]);
 
 // TODO: Add more dirs to the set
@@ -79,7 +91,8 @@ export const scanCodebase = async (rootDir = ".", allFiles = []) => {
             }
         }
     } catch (error) {
-        console.warn(`⚠️  Cannot read directory: ${rootDir}`);
+        console.warn(`⚠️ Cannot read directory: ${rootDir}`);
+        process.exit(1)
     }
     return allFiles;
 };
@@ -93,7 +106,9 @@ export const reviewSourceFiles = async (_id, sourceFiles, reviewerAgent) => {
         console.log("⚠️ No files to review!\n");
     }
 
-    console.log(`📊 Found ${total} files to review\n`);
+    console.log(
+        `📊  Found ${total} ${total === 1 ? "file" : "files"} to review\n`,
+    );
 
     for (let i = 0; i < sourceFiles.length; i++) {
         const currFile = sourceFiles[i];
