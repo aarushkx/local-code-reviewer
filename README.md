@@ -31,8 +31,6 @@ Generated reports are stored in `\_generated/<project_id>/`
 
 The database (`reviews.db`) stores structured review data for retrieval.
 
----
-
 ## Notes
 
 - Make sure Ollama is installed and running before using this tool.  
